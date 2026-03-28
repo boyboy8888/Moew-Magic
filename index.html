@@ -19,10 +19,10 @@
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <video id="vid0" src="./vdo1.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
-        <video id="vid1" src="./vdo2.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
-        <video id="vid2" src="./vdo3.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
-      </a-assets>
+    <video id="vid0" src="./vdo1.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
+    <video id="vid1" src="./vdo2.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
+    <video id="vid2" src="./vdo3.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
+</a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
@@ -41,31 +41,37 @@
     </a-scene>
 
     <script>
-      const sceneEl = document.querySelector('a-scene');
-      
-      // เมื่อสแกนเจอ
-      sceneEl.addEventListener("targetFound", event => {
-        const index = event.detail.index;
-        const video = document.querySelector(`#vid${index}`);
-        if (video) {
-            video.muted = false; // เปิดเสียงเมื่อเจอภาพ
-            video.play();
-        }
-      });
+  const sceneEl = document.querySelector('a-scene');
+  const startButton = document.querySelector('#start-button');
 
-      // เมื่อสแกนไม่เจอ
-      sceneEl.addEventListener("targetLost", event => {
-        const index = event.detail.index;
-        const video = document.querySelector(`#vid${index}`);
-        if (video) video.pause();
-      });
+  // ฟังก์ชันปลดล็อกวิดีโอทั้งหมดเมื่อกดปุ่ม
+  startButton.addEventListener('click', () => {
+    const vids = [
+      document.querySelector('#vid0'),
+      document.querySelector('#vid1'),
+      document.querySelector('#vid2')
+    ];
+    vids.forEach(v => { if(v) { v.play(); v.pause(); } }); // Trick ปลดล็อก Browser
+    startButton.style.display = 'none';
+  });
 
-      // ทริคสำคัญ: แตะหน้าจอ 1 ครั้งเพื่อเริ่ม (เผื่อ Browser บล็อก)
-      window.addEventListener('click', () => {
-          const videos = document.querySelectorAll('video');
-          videos.forEach(v => v.play().then(() => v.pause()));
-      });
-    </script>
+  // เมื่อสแกนเจอภาพ (Target Found)
+  sceneEl.addEventListener("targetFound", event => {
+    const index = event.detail.index;
+    const video = document.querySelector(`#vid${index}`);
+    if (video) {
+        video.muted = false; // ถ้าอยากให้มีเสียงตอนสแกนติด
+        video.play().catch(e => console.log("Video play failed", e));
+    }
+  });
+
+  // เมื่อเลื่อนกล้องออก (Target Lost)
+  sceneEl.addEventListener("targetLost", event => {
+    const index = event.detail.index;
+    const video = document.querySelector(`#vid${index}`);
+    if (video) video.pause();
+  });
+</script>
   
   <script>
   const startButton = document.querySelector('#start-button');
