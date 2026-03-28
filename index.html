@@ -9,13 +9,13 @@
         #start-button {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             z-index: 9999; padding: 20px 40px; background: #FF6B6B; color: white;
-            border: none; border-radius: 50px; font-size: 20px; cursor: pointer;
+            border: none; border-radius: 50px; font-size: 18px; cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
-    <button id="start-button">แตะเพื่อเริ่มดู AR (Android Support)</button>
+    <button id="start-button">เปิดกล้องส่อง Memii Adventure</button>
 
     <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         <a-assets>
@@ -28,57 +28,4 @@
 
         <a-entity mindar-image-target="targetIndex: 0">
             <a-video src="#vid1" width="0.63" height="1.12" position="0 0 0"></a-video>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 1">
-            <a-video src="#vid2" width="0.63" height="1.12" position="0 0 0"></a-video>
-        </a-entity>
-        <a-entity mindar-image-target="targetIndex: 2">
-            <a-video src="#vid3" width="0.63" height="1.12" position="0 0 0"></a-video>
-        </a-entity>
-    </a-scene>
-
-    <script>
-        const startButton = document.querySelector('#start-button');
-        const sceneEl = document.querySelector('a-scene');
-        const vids = ["#vid1", "#vid2", "#vid3"];
-
-        startButton.addEventListener('click', () => {
-            // 1. เริ่มระบบ AR (ขอสิทธิ์กล้อง)
-            const arSystem = sceneEl.systems["mindar-image-system"];
-            if (arSystem) {
-                arSystem.start(); 
-            }
-
-            // 2. ปลดล็อกวิดีโอ (Android บังคับให้ต้อง Play ก่อนหนึ่งครั้ง)
-            vids.forEach(id => {
-                const v = document.querySelector(id);
-                if (v) {
-                    v.play().then(() => {
-                        v.pause(); // เล่นแล้วหยุดทันทีเพื่อรอสแกน
-                    }).catch(err => console.log("Unlock error:", err));
-                }
-            });
-
-            startButton.style.display = 'none';
-        });
-
-        // 3. ควบคุมการเล่นเมื่อสแกนติด
-        sceneEl.addEventListener("targetFound", event => {
-            const index = event.detail.index;
-            const currentVideo = document.querySelector(vids[index]);
-            if (currentVideo) {
-                currentVideo.muted = false; // เปิดเสียง
-                currentVideo.play();
-            }
-        });
-
-        sceneEl.addEventListener("targetLost", event => {
-            const index = event.detail.index;
-            const currentVideo = document.querySelector(vids[index]);
-            if (currentVideo) {
-                currentVideo.pause();
-            }
-        });
-    </script>
-</body>
-</html>
+        </
