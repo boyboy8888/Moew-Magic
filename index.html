@@ -1,47 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+      body { margin: 0; overflow: hidden; }
+    </style>
+  </head>
   <body>
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: no; uiScanning: no;" 
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind; autoStart: true; uiLoading: yes; uiScanning: yes;" 
              color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
              vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
       
       <a-assets>
-        <video id="vid0" src="./vdo1.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-        <video id="vid1" src="./vdo2.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
-        <video id="vid2" src="./vdo3.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline></video>
+        <video id="vid0" src="./vdo1.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
+        <video id="vid1" src="./vdo2.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
+        <video id="vid2" src="./vdo3.mp4" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted></video>
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
-        <a-video src="#vid0" width="1" height="1" position="0 0 0" rotation="0 0 0"></a-video>
+        <a-video src="#vid0" width="1" height="1" position="0 0 0"></a-video>
       </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 1">
-        <a-video src="#vid1" width="1" height="1" position="0 0 0" rotation="0 0 0"></a-entity>
+        <a-video src="#vid1" width="1" height="1" position="0 0 0"></a-video>
+      </a-entity>
 
       <a-entity mindar-image-target="targetIndex: 2">
-        <a-video src="#vid2" width="1" height="1" position="0 0 0" rotation="0 0 0"></a-entity>
+        <a-video src="#vid2" width="1" height="1" position="0 0 0"></a-video>
+      </a-entity>
 
     </a-scene>
 
     <script>
-      // สคริปต์สั่งให้วิดีโอเล่นเมื่อสแกนเจอ และหยุดเมื่อเลื่อนกล้องออก (สำคัญมาก!)
       const sceneEl = document.querySelector('a-scene');
+      
+      // เมื่อสแกนเจอ
       sceneEl.addEventListener("targetFound", event => {
         const index = event.detail.index;
         const video = document.querySelector(`#vid${index}`);
-        if (video) video.play();
+        if (video) {
+            video.muted = false; // เปิดเสียงเมื่อเจอภาพ
+            video.play();
+        }
       });
+
+      // เมื่อสแกนไม่เจอ
       sceneEl.addEventListener("targetLost", event => {
         const index = event.detail.index;
         const video = document.querySelector(`#vid${index}`);
         if (video) video.pause();
+      });
+
+      // ทริคสำคัญ: แตะหน้าจอ 1 ครั้งเพื่อเริ่ม (เผื่อ Browser บล็อก)
+      window.addEventListener('click', () => {
+          const videos = document.querySelectorAll('video');
+          videos.forEach(v => v.play().then(() => v.pause()));
       });
     </script>
   </body>
